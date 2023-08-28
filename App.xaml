@@ -1,0 +1,11 @@
+﻿<Application x:Class="KTotito.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:KTotito"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <SolidColorBrush x:Key="BackgroundColor" Color="#F48A2E"/>
+        <SolidColorBrush x:Key="ButtonColor" Color="#FFB966"/>
+        <SolidColorBrush x:Key="LineColor" Color="#01FD0A"/>
+    </Application.Resources>
+</Application>
