@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -51,7 +52,9 @@ public partial class MainWindow : Window {
         PlayerImage.Source = imageSources[gameState.CurrentPlayer]; 
     }
 
-    private void OnGameFinished(GameResult result) {
+    private async void OnGameFinished(GameResult result) {
+        await Task.Delay(1000);
+
         if(result.Winner == Player.None) 
             TransitionToEndScreen("It's a tie!", null);
         else
