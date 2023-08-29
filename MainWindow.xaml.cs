@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Animation;
+using System.Runtime.CompilerServices;
 
 namespace KTotito;
 
@@ -20,6 +21,18 @@ public partial class MainWindow : Window {
     private readonly Dictionary<Player, ObjectAnimationUsingKeyFrames> animations = new() {
         { Player.X, new ObjectAnimationUsingKeyFrames() },
         { Player.O, new ObjectAnimationUsingKeyFrames() }
+    };
+
+    private readonly DoubleAnimation fadeOutAnimation = new DoubleAnimation {
+        Duration = TimeSpan.FromSeconds(0.5),
+        From = 1,
+        To = 0
+    };
+
+    private readonly DoubleAnimation fadeInAnimation = new DoubleAnimation {
+        Duration = TimeSpan.FromSeconds(0.5),
+        From = 0,
+        To = 1
     };
 
     private readonly Image[,] imageControls = new Image[3, 3];
@@ -62,19 +75,29 @@ public partial class MainWindow : Window {
         }
     }
 
-    private void TransitionToEndScreen(string text, ImageSource winnerImage) {
-        TurnPanel.Visibility = Visibility.Hidden;
-        GameCanvas.Visibility = Visibility.Hidden;
-        ResultText.Text = text;
-        WinnerImage.Source = winnerImage;
-        EndScreen.Visibility = Visibility.Visible;
+    private async Task FadeOut(UIElement element) {
+        element.BeginAnimation(OpacityProperty, fadeOutAnimation);
+        await Task.Delay(fadeOutAnimation.Duration.TimeSpan);
+        element.Visibility = Visibility.Hidden;
     }
 
-    private void TransitionToGameScreen() {
-        EndScreen.Visibility = Visibility.Hidden;
+    private async Task FadeIn(UIElement element) {
+        element.Visibility = Visibility.Visible;
+        element.BeginAnimation(OpacityProperty, fadeInAnimation);
+        await Task.Delay(fadeInAnimation.Duration.TimeSpan);
+    }
+
+    private async Task TransitionToEndScreen(string text, ImageSource winnerImage) {
+        await Task.WhenAll(FadeOut(TurnPanel), FadeOut(GameCanvas));
+        ResultText.Text = text;
+        WinnerImage.Source = winnerImage;
+        await FadeIn(EndScreen);
+    }
+
+    private async Task TransitionToGameScreen() {
+        await FadeOut(EndScreen);
         Line.Visibility = Visibility.Hidden;
-        TurnPanel.Visibility = Visibility.Visible;
-        GameCanvas.Visibility = Visibility.Visible;
+        await Task.WhenAll(FadeIn(TurnPanel), FadeIn(GameCanvas));
     }
 
     private (Point, Point) FindLinePoints(WinInfo winInfo) {
@@ -118,15 +141,15 @@ public partial class MainWindow : Window {
         await Task.Delay(1000);
 
         if (result.Winner == Player.None)
-            TransitionToEndScreen("It's a tie!", null);
+            await TransitionToEndScreen("It's a tie!", null);
         else {
             ShowLine(result.WinInfo); 
             await Task.Delay(1000);
-            TransitionToEndScreen("Winner:", imageSources[result.Winner]);
+            await TransitionToEndScreen("Winner:", imageSources[result.Winner]);
         }
     }
 
-    private void OnGameRestarted() {
+    private async void OnGameRestarted() {
         for (int r = 0; r < 3; r++)
             for (int c = 0; c < 3; c++) {
                 imageControls[r, c].BeginAnimation(Image.SourceProperty, null);
@@ -134,7 +157,7 @@ public partial class MainWindow : Window {
             }
 
         PlayerImage.Source = imageSources[gameState.CurrentPlayer];
-        TransitionToGameScreen();
+        await TransitionToGameScreen();
     }
 
     private void GameGrid_MouseDown(object sender, MouseButtonEventArgs e) {
