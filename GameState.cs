@@ -39,7 +39,7 @@ public class GameState {
         return true;
     }
 
-    private bool IsWinningMove(int r, int c, out WinInfo winInfo) {
+    private bool IsWinningMove(int r, int c, out WinInfo? winInfo) {
         (int, int)[] row = new[] {
             (r, 0), (r, 1), (r, 2)
         };
@@ -87,7 +87,7 @@ public class GameState {
         return false;
     }
 
-    private bool DidMoveEndGame(int r, int c, out GameResult gameResult) {
+    private bool DidMoveEndGame(int r, int c, out GameResult? gameResult) {
         if(IsWinningMove(r, c, out WinInfo winInfo)) {
             gameResult = new GameResult {
                 Winner = CurrentPlayer,

@@ -23,20 +23,20 @@ public partial class MainWindow : Window {
         { Player.O, new ObjectAnimationUsingKeyFrames() }
     };
 
-    private readonly DoubleAnimation fadeOutAnimation = new DoubleAnimation {
+    private readonly DoubleAnimation fadeOutAnimation = new() {
         Duration = TimeSpan.FromSeconds(0.5),
         From = 1,
         To = 0
     };
 
-    private readonly DoubleAnimation fadeInAnimation = new DoubleAnimation {
+    private readonly DoubleAnimation fadeInAnimation = new () {
         Duration = TimeSpan.FromSeconds(0.5),
         From = 0,
         To = 1
     };
 
     private readonly Image[,] imageControls = new Image[3, 3];
-    private readonly GameState gameState = new GameState();
+    private readonly GameState gameState = new ();
 
     public MainWindow() {
         InitializeComponent();
@@ -51,7 +51,7 @@ public partial class MainWindow : Window {
     private void SetupGameGrid() {
         for (int r=0; r<3; r++) {
             for (int c=0; c<3; c++) {
-                Image imageControl = new Image();
+                Image imageControl = new ();
                 GameGrid.Children.Add(imageControl);
                 imageControls[r, c] = imageControl;
             }
@@ -63,14 +63,14 @@ public partial class MainWindow : Window {
         animations[Player.O].Duration = TimeSpan.FromSeconds(0.25);
 
         for (int i=0; i<16; i++) {
-            Uri xUri = new Uri($"pack://application:,,,/Assets/X{i}.png");
-            BitmapImage xImg = new BitmapImage(xUri);
-            DiscreteObjectKeyFrame xKeyFrame = new DiscreteObjectKeyFrame(xImg);
+            Uri xUri = new ($"pack://application:,,,/Assets/X{i}.png");
+            BitmapImage xImg = new (xUri);
+            DiscreteObjectKeyFrame xKeyFrame = new (xImg);
             animations[Player.X].KeyFrames.Add(xKeyFrame);
 
-            Uri oUri = new Uri($"pack://application:,,,/Assets/O{i}.png");
-            BitmapImage oImg = new BitmapImage(oUri);
-            DiscreteObjectKeyFrame oKeyFrame = new DiscreteObjectKeyFrame(oImg);
+            Uri oUri = new ($"pack://application:,,,/Assets/O{i}.png");
+            BitmapImage oImg = new (oUri);
+            DiscreteObjectKeyFrame oKeyFrame = new (oImg);
             animations[Player.O].KeyFrames.Add(oKeyFrame);
         }
     }
@@ -87,7 +87,7 @@ public partial class MainWindow : Window {
         await Task.Delay(fadeInAnimation.Duration.TimeSpan);
     }
 
-    private async Task TransitionToEndScreen(string text, ImageSource winnerImage) {
+    private async Task TransitionToEndScreen(string text, ImageSource? winnerImage) {
         await Task.WhenAll(FadeOut(TurnPanel), FadeOut(GameCanvas));
         ResultText.Text = text;
         WinnerImage.Source = winnerImage;
@@ -125,13 +125,13 @@ public partial class MainWindow : Window {
         Line.X1 = start.X;
         Line.Y1 = start.Y;
 
-        DoubleAnimation x2Animation = new DoubleAnimation {
+        DoubleAnimation x2Animation = new () {
             Duration = TimeSpan.FromSeconds(0.25),
             From = start.X,
             To = end.X
         };
 
-        DoubleAnimation y2Animation = new DoubleAnimation {
+        DoubleAnimation y2Animation = new () {
             Duration = TimeSpan.FromSeconds(0.25),
             From = start.Y,
             To = end.Y
@@ -185,5 +185,4 @@ public partial class MainWindow : Window {
         if (gameState.GameOver)
             gameState.Reset();
     }
-
 }
